@@ -112,7 +112,7 @@ body::after {
   width: 100%;
   -webkit-text-stroke: 1px #00ffe5;
   color: transparent;
-  animation: glitch1 4s infinite;
+  animation: glitch1 2s infinite;
   clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
   transform: translateX(-3px);
   opacity: 0;
@@ -124,7 +124,7 @@ body::after {
   width: 100%;
   -webkit-text-stroke: 1px #f59e0b;
   color: transparent;
-  animation: glitch2 4s infinite;
+  animation: glitch2 2s infinite;
   clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
   transform: translateX(3px);
   opacity: 0;
