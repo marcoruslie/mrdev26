@@ -115,7 +115,7 @@ export default function Hero() {
 									👤
 								</div>
 								<Image
-									src="/profile.jpg"
+									src="/icon/profile.jpg"
 									alt="Marco Ruslie"
 									fill
 									className="object-cover object-top"
