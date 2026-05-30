@@ -13,8 +13,32 @@
   --glow2: 0 0 40px rgba(124, 58, 237, 0.3);
 }
 
-html {
-  cursor: none;
+/* Hide the native cursor only where a real pointer exists (desktop).
+   Touch / coarse-pointer devices keep their default cursor. */
+@media (pointer: fine) {
+  html {
+    cursor: none;
+  }
+}
+
+/* Visible keyboard-focus ring for accessibility. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Respect users who ask for less motion: neutralize CSS keyframe/transition
+   animations. Framer Motion is handled separately via <MotionConfig>. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Scanlines */

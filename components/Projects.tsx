@@ -300,7 +300,7 @@ function ProjectCard({
           onOpen(project);
         }
       }}
-      className="clip-corner-lg group relative flex flex-col cursor-none outline-none"
+      className="clip-corner-lg group relative flex flex-col cursor-none"
       style={{
         background: "rgba(10,15,30,0.6)",
         backdropFilter: "blur(12px)",

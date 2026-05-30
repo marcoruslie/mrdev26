@@ -103,24 +103,14 @@ export default function Hero() {
 								background: "var(--surface)",
 								border: "1px solid var(--border)",
 							}}>
-							
-							<div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-								<div
-									className="w-24 h-24 rounded-full flex items-center justify-center text-4xl"
-									style={{
-										background:
-											"linear-gradient(135deg, rgba(0,255,229,0.1), rgba(124,58,237,0.2))",
-										border: "1px solid var(--border)",
-									}}>
-									👤
-								</div>
-								<Image
-									src="/icon/profile.jpg"
-									alt="Marco Ruslie"
-									fill
-									className="object-cover object-top"
-								/>
-							</div>
+
+							<Image
+								src="/icon/profile.jpg"
+								alt="Marco Ruslie"
+								fill
+								sizes="(max-width: 768px) 280px, 320px"
+								className="object-cover object-top"
+							/>
 
 							{/* Gradient overlay for depth */}
 							<div

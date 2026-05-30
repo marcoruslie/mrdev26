@@ -16,8 +16,20 @@ export default function Cursor() {
   const ringY = useSpring(cursorY, springConfig);
 
   const [hovering, setHovering] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+
+  /* Only run the custom cursor where a precise pointer exists (desktop).
+     Touch devices keep their native behavior and skip the extra DOM/work. */
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: fine)");
+    const update = () => setEnabled(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const move = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
@@ -34,7 +46,9 @@ export default function Cursor() {
       document.removeEventListener("mousemove", move);
       document.removeEventListener("mouseover", over);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, enabled]);
+
+  if (!enabled) return null;
 
   return (
     <>
