@@ -4,7 +4,8 @@ import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { SectionLabel, SectionTitle, RevealSection } from "./ui"
 import Image from "next/image"
-const skills = [
+/* Exported so About can count the stack without hardcoding a number. */
+export const skills = [
 	{ name: "Next.js", icon: "/icon/next.png", tag: "Frontend", color: "#ffffff" },
 	{ name: "Nuxt", icon: "/icon/nuxt.png", tag: "Frontend", color: "#00DC82" },
 	{ name: "Laravel", icon: "/icon/laravel.png", tag: "Backend", color: "#FF2D20" },

@@ -3,14 +3,16 @@
 import { useRef, useEffect, useState } from "react";
 import { useInView } from "framer-motion";
 import { SectionLabel, SectionTitle, RevealSection } from "./ui";
+import { skills } from "./Skills";
+import { YEARS, TECHNICIANS, SITES } from "./facts";
 
-function Counter({ target, suffix = "" }: { target: number | string; suffix?: string }) {
+function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [value, setValue] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
 
   useEffect(() => {
-    if (!inView || typeof target !== "number") return;
+    if (!inView) return;
     let start = 0;
     const duration = 1500;
     const step = target / (duration / 16);
@@ -28,16 +30,18 @@ function Counter({ target, suffix = "" }: { target: number | string; suffix?: st
 
   return (
     <span ref={ref}>
-      {typeof target === "number" ? value + suffix : target}
+      {value}
+      {suffix}
     </span>
   );
 }
 
+/* Each stat is something an interviewer could ask me to name. */
 const stats = [
-  { num: 2, suffix: "+", desc: "Years Experience" },
-  { num: 2, suffix: "", desc: "Industry Roles" },
-  { num: 7, suffix: "+", desc: "Tech Stacks" },
-  { num: "∞", suffix: "", desc: "Lines Written" },
+  { num: YEARS, suffix: "+", desc: "Years Sole Developer" },
+  { num: TECHNICIANS, suffix: "", desc: "Daily Users" },
+  { num: SITES, suffix: "", desc: "Manufacturing Sites" },
+  { num: skills.length, suffix: "", desc: "Core Technologies" },
 ];
 
 export default function About() {
@@ -115,7 +119,7 @@ export default function About() {
                   className="text-[2.5rem] font-extrabold leading-none mb-2"
                   style={{ color: "var(--accent)" }}
                 >
-                  <Counter target={typeof s.num === "number" ? s.num : s.num} suffix={s.suffix} />
+                  <Counter target={s.num} suffix={s.suffix} />
                 </div>
                 <div className="font-tech text-[0.7rem] text-muted uppercase tracking-widest">
                   {s.desc}

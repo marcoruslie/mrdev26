@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { YEARS, TECHNICIANS, SITES_LABEL } from "./facts"
+
 const fadeUp = (delay = 0) => ({
 	initial: { opacity: 0, y: 30 },
 	animate: { opacity: 1, y: 0 },
@@ -21,7 +23,7 @@ export default function Hero() {
 						{...fadeUp(0.2)}
 						className="flex items-center gap-3 mb-6 font-tech text-xs text-accent uppercase tracking-[0.25em]">
 						<span className="w-10 h-px bg-accent" />
-						// Available for work
+						// Sole developer · Open to remote
 					</motion.div>
 
 					{/* Name */}
@@ -43,17 +45,28 @@ export default function Hero() {
 					{/* Role */}
 					<motion.p
 						{...fadeUp(0.6)}
-						className="font-tech text-[clamp(0.75rem,1.5vw,1rem)] text-muted tracking-wide mb-8">
-						Website &amp; <span className="text-accent2">Mobile Developer</span>
-						&nbsp;·&nbsp; Next.js &amp; Motion Specialist
+						className="font-tech text-[clamp(0.75rem,1.5vw,1rem)] text-muted tracking-wide mb-6">
+						<span className="text-accent2">Production Systems Developer</span>
+						&nbsp;·&nbsp; Web &amp; Mobile &nbsp;·&nbsp; Laravel / Next.js / Flutter
+					</motion.p>
+
+					{/* Ownership line — the claim the whole page has to back up */}
+					<motion.p
+						{...fadeUp(0.8)}
+						className="text-[clamp(1rem,1.6vw,1.15rem)] text-slate-200 leading-[1.7] mb-4">
+						Sole developer, {YEARS}+ years — designed and run the production systems{" "}
+						<span className="text-muted">(helpdesk + QC)</span> used daily by{" "}
+						<span className="text-accent font-semibold">{TECHNICIANS} technicians</span> across{" "}
+						<span className="text-accent font-semibold">{SITES_LABEL}</span>.
 					</motion.p>
 
 					{/* Desc */}
 					<motion.p
-						{...fadeUp(0.8)}
+						{...fadeUp(0.95)}
 						className="text-[0.95rem] text-muted leading-[1.8] mb-10">
-						Building fast, beautiful digital products — from responsive web platforms to cross-platform
-						mobile apps. Turning complex flows into seamless user experiences.
+						Requirements, architecture, deployment, and the support calls when something breaks at 2am —
+						all mine. No team to escalate to, no handover. That&apos;s what I&apos;m bringing to a remote
+						role.
 					</motion.p>
 
 					{/* CTAs */}
@@ -150,7 +163,7 @@ export default function Hero() {
 								color: "var(--accent)",
 								clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)",
 							}}>
-							// Full-Stack Dev
+							// Owned end-to-end
 						</motion.div>
 
 						{/* Floating badge right */}
@@ -164,7 +177,7 @@ export default function Hero() {
 								color: "#a78bfa",
 								clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)",
 							}}>
-							// Mobile Dev
+							// Live in production
 						</motion.div>
 					</div>
 				</motion.div>

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import Image from "next/image";
 import { SectionLabel, SectionTitle, RevealSection } from "./ui";
+import { COMPANIES } from "./facts";
 
 /* ------------------------------------------------------------------ *
  *  PROJECT DATA — edit this array to showcase your real work.         *
@@ -187,11 +188,15 @@ const FILTERS = [
 
 type Filter = (typeof FILTERS)[number];
 
+/* Derived from the array above so the numbers can never drift from the
+   work actually listed on the page. */
+const techCount = new Set(projects.flatMap((p) => p.tech)).size;
+
 const stats = [
-  { num: projects.length, suffix: "+", label: "Projects Built" },
-  { num: 2, suffix: "+", label: "Years of Experience" },
-  { num: 12, suffix: "+", label: "Technologies Used" },
-  { num: 4, suffix: "", label: "Industries Served" },
+  { num: projects.length, suffix: "", label: "Systems Built" },
+  { num: techCount, suffix: "", label: "Technologies Shipped" },
+  { num: COMPANIES, suffix: "", label: "Companies Served" },
+  { num: 100, suffix: "%", label: "Built & Owned Solo" },
 ];
 
 /* Animated count-up — mirrors the Counter pattern used in About.tsx. */
