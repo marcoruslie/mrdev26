@@ -51,10 +51,74 @@ type Project = {
   liveUrl?: string;
 };
 const PROJECT_PRODUCTION_SUPPORT_DIR = "/projects/production-support-dashboard";
-const PROJECT_DIGITAL_SIGNAGE_DIR = "/projects/digital-signage-system";
 const PROJECT_HELPDESK_TECH_DIR = "/projects/helpdesk-technician-dashboard";
+const PROJECT_DIGITAL_SIGNAGE_DIR = "/projects/digital-signage-system";
+const PROJECT_POS_SYSTEM_DIR = "/projects/pos-system";
+const PROJECT_ISLAMIC_FASHION_DIR = "/projects/islamic-fashion-ecommerce";
 
 const projects: Project[] = [
+  {
+    id: "islamic-fashion-ecommerce",
+    title: "Islamic Clothing E-Commerce & Production Management System",
+    category: "Manufacturing",
+    year: "2026",
+    description:
+      "Full-stack platform for a small Muslim-clothing manufacturer that joins a customer-facing storefront to an internal production floor — replacing guesswork-based production planning with a Fuzzy Mamdani inference engine that recommends how many units to make each cycle.",
+    tech: [
+      "Laravel 11",
+      "PHP 8.2",
+      "MySQL",
+      "Blade + jQuery DataTables",
+      "Tailwind CSS (CDN)",
+    ],
+    features: [
+      "Fuzzy Mamdani engine recommending production quantity",
+      "Storefront with cart, checkout & order tracking",
+      "Production batches with bill-of-materials & HPP costing",
+      "Role-based access for admin, staff & buyers",
+      "Sales, production & inventory reports with export",
+    ],
+    impact:
+      "Replaced intuition-based production planning with a defensible number — the Fuzzy Mamdani engine turns 12 months of sales history into a recommended unit count and shows every step, so the owner sees why, not just what. Paired with a per-product bill of materials, material needs and HPP fall out of that recommendation automatically.",
+    glyph: "🧵",
+    images: [`${PROJECT_ISLAMIC_FASHION_DIR}/01-storefront-landing.jpg`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/02-shop-catalog.jpg`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/03-admin-dashboard.jpg`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/04-fuzzy-mamdani-recommendation.jpg`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/05-admin-products.jpg`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/06-product-detail.jpg`],
+  },
+  {
+    id: "digital-signage-system",
+    title: "Smart Signage CMS & CCTV Platform",
+    category: "Custom Workflow",
+    year: "2026",
+    description:
+      "Digital signage platform that turns any mini-PC into a managed screen — a dark-glass dashboard drives playlists, schedules, and live Hikvision CCTV walls across every display, with an installable kiosk player that pairs itself to the CMS in one code.",
+    tech: [
+      "NestJS",
+      "Prisma + PostgreSQL",
+      "Redis",
+      "Next.js 15",
+      "Electron",
+      "MediaMTX (WebRTC/HLS)",
+    ],
+    features: [
+      "Kiosk player app with 6-digit pairing & auto-registration",
+      "Live RTSP cameras re-streamed to WebRTC with HLS fallback",
+      "Passive/Active display modes with idle fallback to content",
+      "Heartbeat monitoring showing online/offline per screen",
+      "JWT auth with RBAC for admin, operator & viewer roles",
+    ],
+    impact:
+      "Removed the manual trip to every screen — a technician installs the player once, types a pairing code, and the display is managed from the dashboard forever after, surviving reboots on its own. Heartbeats surface a dead screen in about 90 seconds instead of whenever someone walks past it, and RTSP cameras reach the wall as low-latency WebRTC without exposing the camera network.",
+    glyph: "📺",
+    images: [`${PROJECT_DIGITAL_SIGNAGE_DIR}/01-login.jpg`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/02-dashboard.jpg`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/03-displays.jpg`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/04-playlists.jpg`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/05-cctv-cameras.jpg`],
+  },
   {
     id: "helpdesk-technician-dashboard",
     title: "Helpdesk Technician Dashboard",
@@ -131,21 +195,26 @@ const projects: Project[] = [
     glyph: "🗃️",
   },
   {
-    id: "retail-pos",
-    title: "Retail POS System",
+    id: "restaurant-pos",
+    title: "Restaurant POS & Management System",
     category: "POS",
-    year: "2024",
+    year: "2026",
     description:
-      "Point-of-sale system handling transactions, receipt printing, and daily sales summaries for retail counter staff.",
-    tech: ["Laravel", "Vue", "MySQL", "Tailwind"],
+      "Full-stack restaurant operations platform that unifies point-of-sale, QR self-ordering, inventory, and financial reporting — replacing manual order slips and spreadsheet stock tracking with a single real-time system.",
+    tech: ["Laravel 11", "PHP 8.2", "MySQL", "Blade + Vanilla JS"],
     features: [
-      "Fast checkout & receipt printing",
-      "Daily sales & cash reports",
-      "Product & pricing management",
+      "Point-of-sale with real-time cart, table selection & auto tax",
+      "QR-code self-ordering for customers (no waiter needed)",
+      "Recipe-based inventory auto-deduction on every order",
+      "Multi-floor drag-and-drop table layout & reservations",
+      "Financial reports with HPP (COGS) and profit margin analytics",
     ],
     impact:
-      "Sped up checkout and gave owners reliable daily sales figures without manual tallying.",
+      "Eliminated handwritten order slips and manual stock counts — every sale auto-deducts ingredients through the recipe table, so stock and cost of goods stay accurate with no extra data entry, giving owners true profit margin per item. QR self-ordering removes the waiter step entirely, cutting order errors and staffing needs.",
     glyph: "🧾",
+    images: [`${PROJECT_POS_SYSTEM_DIR}/1-dashboard.png`, `${PROJECT_POS_SYSTEM_DIR}/2-pos-order.png`,
+              `${PROJECT_POS_SYSTEM_DIR}/3-tables-floor.png`, `${PROJECT_POS_SYSTEM_DIR}/4-reports.png`,
+              `${PROJECT_POS_SYSTEM_DIR}/5-qr-customer.png`],
   },
   {
     id: "executive-analytics",
