@@ -89,6 +89,35 @@ const projects: Project[] = [
               `${PROJECT_ISLAMIC_FASHION_DIR}/06-product-detail.jpg`],
   },
   {
+    // TODO: swap in the real project name, details, and screenshots
+    // (drop them in /public/projects/warehouse-inventory-api).
+    id: "warehouse-inventory-api",
+    title: "Warehouse Inventory & Stock Movement System",
+    category: "Inventory",
+    year: "2026",
+    description:
+      "Backend-first inventory platform built on Java and Spring Boot that tracks every item across multiple warehouses — receiving, transfers, picking, and stock opname all run through one REST API, so the stock figure on screen is always derived from recorded movements rather than typed in by hand.",
+    tech: [
+      "Java 21",
+      "Spring Boot 3",
+      "Spring Security + JWT",
+      "Spring Data JPA",
+      "PostgreSQL",
+      "Flyway",
+      "Docker",
+    ],
+    features: [
+      "Multi-warehouse stock with bin / rack locations",
+      "Goods receipt, transfer & issue as ledger movements",
+      "Stock opname with variance adjustment & approval",
+      "Low-stock alerts based on per-item reorder points",
+      "Role-based access for admin, warehouse staff & auditor",
+    ],
+    impact:
+      "Replaced spreadsheet stock counts with a movement ledger — every quantity change is a transaction with who, when, and why, so a stock discrepancy can be traced back to the exact receipt or transfer that caused it. Transactional service methods keep transfers atomic, so stock can't disappear between two warehouses mid-update.",
+    glyph: "☕",
+  },
+  {
     id: "digital-signage-system",
     title: "Smart Signage CMS & CCTV Platform",
     category: "Custom Workflow",
