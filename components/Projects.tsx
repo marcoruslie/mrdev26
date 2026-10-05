@@ -55,6 +55,10 @@ const PROJECT_HELPDESK_TECH_DIR = "/projects/helpdesk-technician-dashboard";
 const PROJECT_DIGITAL_SIGNAGE_DIR = "/projects/digital-signage-system";
 const PROJECT_POS_SYSTEM_DIR = "/projects/pos-system";
 const PROJECT_ISLAMIC_FASHION_DIR = "/projects/islamic-fashion-ecommerce";
+const PROJECT_WAREHOUSE_INVENTORY_DIR = "/projects/warehouse-inventory-api";
+const PROJECT_HELPDESK_OPS_DIR = "/projects/helpdesk-operations-app";
+const PROJECT_PRODUCTION_OPS_DIR = "/projects/production-operation-app";
+const PROJECT_EXEC_ANALYTICS_DIR = "/projects/executive-analytics";
 
 const projects: Project[] = [
   {
@@ -81,16 +85,16 @@ const projects: Project[] = [
     impact:
       "Replaced intuition-based production planning with a defensible number — the Fuzzy Mamdani engine turns 12 months of sales history into a recommended unit count and shows every step, so the owner sees why, not just what. Paired with a per-product bill of materials, material needs and HPP fall out of that recommendation automatically.",
     glyph: "🧵",
-    images: [`${PROJECT_ISLAMIC_FASHION_DIR}/01-storefront-landing.jpg`,
-              `${PROJECT_ISLAMIC_FASHION_DIR}/02-shop-catalog.jpg`,
-              `${PROJECT_ISLAMIC_FASHION_DIR}/03-admin-dashboard.jpg`,
-              `${PROJECT_ISLAMIC_FASHION_DIR}/04-fuzzy-mamdani-recommendation.jpg`,
-              `${PROJECT_ISLAMIC_FASHION_DIR}/05-admin-products.jpg`,
-              `${PROJECT_ISLAMIC_FASHION_DIR}/06-product-detail.jpg`],
+    images: [`${PROJECT_ISLAMIC_FASHION_DIR}/01-storefront-landing.webp`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/02-shop-catalog.webp`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/03-admin-dashboard.webp`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/04-fuzzy-mamdani-recommendation.webp`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/05-admin-products.webp`,
+              `${PROJECT_ISLAMIC_FASHION_DIR}/06-product-detail.webp`],
   },
   {
-    // TODO: swap in the real project name, details, and screenshots
-    // (drop them in /public/projects/warehouse-inventory-api).
+    // TODO: swap in the real project name and details. The images are
+    // illustrative mockups — replace them with real screenshots.
     id: "warehouse-inventory-api",
     title: "Warehouse Inventory & Stock Movement System",
     category: "Inventory",
@@ -116,6 +120,10 @@ const projects: Project[] = [
     impact:
       "Replaced spreadsheet stock counts with a movement ledger — every quantity change is a transaction with who, when, and why, so a stock discrepancy can be traced back to the exact receipt or transfer that caused it. Transactional service methods keep transfers atomic, so stock can't disappear between two warehouses mid-update.",
     glyph: "☕",
+    images: [`${PROJECT_WAREHOUSE_INVENTORY_DIR}/01-dashboard.webp`,
+              `${PROJECT_WAREHOUSE_INVENTORY_DIR}/02-stock-ledger.webp`,
+              `${PROJECT_WAREHOUSE_INVENTORY_DIR}/03-stock-opname.webp`,
+              `${PROJECT_WAREHOUSE_INVENTORY_DIR}/04-api-docs.webp`],
   },
   {
     id: "digital-signage-system",
@@ -142,11 +150,11 @@ const projects: Project[] = [
     impact:
       "Removed the manual trip to every screen — a technician installs the player once, types a pairing code, and the display is managed from the dashboard forever after, surviving reboots on its own. Heartbeats surface a dead screen in about 90 seconds instead of whenever someone walks past it, and RTSP cameras reach the wall as low-latency WebRTC without exposing the camera network.",
     glyph: "📺",
-    images: [`${PROJECT_DIGITAL_SIGNAGE_DIR}/01-login.jpg`,
-              `${PROJECT_DIGITAL_SIGNAGE_DIR}/02-dashboard.jpg`,
-              `${PROJECT_DIGITAL_SIGNAGE_DIR}/03-displays.jpg`,
-              `${PROJECT_DIGITAL_SIGNAGE_DIR}/04-playlists.jpg`,
-              `${PROJECT_DIGITAL_SIGNAGE_DIR}/05-cctv-cameras.jpg`],
+    images: [`${PROJECT_DIGITAL_SIGNAGE_DIR}/01-login.webp`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/02-dashboard.webp`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/03-displays.webp`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/04-playlists.webp`,
+              `${PROJECT_DIGITAL_SIGNAGE_DIR}/05-cctv-cameras.webp`],
   },
   {
     id: "helpdesk-technician-dashboard",
@@ -164,9 +172,9 @@ const projects: Project[] = [
     impact:
       "Cut reporting lag from end-of-shift to real time, helping supervisors react to slowdowns within minutes instead of hours.",
     glyph: "🏭",
-    images: [`${PROJECT_HELPDESK_TECH_DIR}/helpdesk1.png`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk2.png`, 
-              `${PROJECT_HELPDESK_TECH_DIR}/helpdesk3.png`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk4.png`,
-              `${PROJECT_HELPDESK_TECH_DIR}/helpdesk5.png`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk6.png`],
+    images: [`${PROJECT_HELPDESK_TECH_DIR}/helpdesk1.webp`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk2.webp`, 
+              `${PROJECT_HELPDESK_TECH_DIR}/helpdesk3.webp`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk4.webp`,
+              `${PROJECT_HELPDESK_TECH_DIR}/helpdesk5.webp`, `${PROJECT_HELPDESK_TECH_DIR}/helpdesk6.webp`],
   },
   {
     id: "helpdesk-operations-app",
@@ -184,6 +192,9 @@ const projects: Project[] = [
     impact:
       "Replaced spreadsheets and phone calls with a single app, giving head office same-day visibility into field technician activity.",
     glyph: "📱",
+    // Illustrative mockups — replace with real screenshots when available.
+    images: [`${PROJECT_HELPDESK_OPS_DIR}/hd-01-tasks.webp`,
+              `${PROJECT_HELPDESK_OPS_DIR}/hd-02-report.webp`],
   },
   {
     id: "production-support-dashboard",
@@ -201,9 +212,9 @@ const projects: Project[] = [
     impact:
       "Eliminated manual paperwork across production lines and improved tracking accuracy for every packaging batch.",
     glyph: "📦",
-    images: [`${PROJECT_PRODUCTION_SUPPORT_DIR}/prod1.png`, `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod2.png`,
-              `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod3.png`, `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod4.png`,
-              `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod5.png`],
+    images: [`${PROJECT_PRODUCTION_SUPPORT_DIR}/prod1.webp`, `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod2.webp`,
+              `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod3.webp`, `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod4.webp`,
+              `${PROJECT_PRODUCTION_SUPPORT_DIR}/prod5.webp`],
     
   },
   {
@@ -222,6 +233,9 @@ const projects: Project[] = [
     impact:
       "Reduced stockouts and manual counting effort by giving the team accurate, always-current inventory data.",
     glyph: "🗃️",
+    // Illustrative mockups — replace with real screenshots when available.
+    images: [`${PROJECT_PRODUCTION_OPS_DIR}/po-01-input.webp`,
+              `${PROJECT_PRODUCTION_OPS_DIR}/po-02-stock.webp`],
   },
   {
     id: "restaurant-pos",
@@ -241,9 +255,9 @@ const projects: Project[] = [
     impact:
       "Eliminated handwritten order slips and manual stock counts — every sale auto-deducts ingredients through the recipe table, so stock and cost of goods stay accurate with no extra data entry, giving owners true profit margin per item. QR self-ordering removes the waiter step entirely, cutting order errors and staffing needs.",
     glyph: "🧾",
-    images: [`${PROJECT_POS_SYSTEM_DIR}/1-dashboard.png`, `${PROJECT_POS_SYSTEM_DIR}/2-pos-order.png`,
-              `${PROJECT_POS_SYSTEM_DIR}/3-tables-floor.png`, `${PROJECT_POS_SYSTEM_DIR}/4-reports.png`,
-              `${PROJECT_POS_SYSTEM_DIR}/5-qr-customer.png`],
+    images: [`${PROJECT_POS_SYSTEM_DIR}/1-dashboard.webp`, `${PROJECT_POS_SYSTEM_DIR}/2-pos-order.webp`,
+              `${PROJECT_POS_SYSTEM_DIR}/3-tables-floor.webp`, `${PROJECT_POS_SYSTEM_DIR}/4-reports.webp`,
+              `${PROJECT_POS_SYSTEM_DIR}/5-qr-customer.webp`],
   },
   {
     id: "executive-analytics",
@@ -261,6 +275,10 @@ const projects: Project[] = [
     impact:
       "Turned scattered reports into one live view, cutting the time managers spend gathering numbers each week.",
     glyph: "📊",
+    // Illustrative mockups — replace with real screenshots when available.
+    images: [`${PROJECT_EXEC_ANALYTICS_DIR}/ea-01-overview.webp`,
+              `${PROJECT_EXEC_ANALYTICS_DIR}/ea-02-production.webp`,
+              `${PROJECT_EXEC_ANALYTICS_DIR}/ea-03-reports.webp`],
   },
 ];
 

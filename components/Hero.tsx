@@ -118,7 +118,7 @@ export default function Hero() {
 							}}>
 
 							<Image
-								src="/icon/profile.jpg"
+								src="/icon/profile.webp"
 								alt="Marco Ruslie"
 								fill
 								sizes="(max-width: 768px) 280px, 320px"
