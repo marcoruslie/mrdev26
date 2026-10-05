@@ -2,7 +2,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useInView,
+  useScroll,
+  useTransform,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import Image from "next/image";
 import { SectionLabel, SectionTitle, RevealSection } from "./ui";
 import { COMPANIES } from "./facts";
@@ -389,222 +397,517 @@ function PreviewPlaceholder({
   );
 }
 
+/* Scroll-linked 3D tilt. Cards swing in from a tilted, pushed-back pose
+   as they enter the viewport, lie flat while in focus, then tip away as
+   they leave. Columns tilt in opposite directions for a fanned feel. */
+function Scroll3D({
+  index,
+  children,
+}: {
+  index: number;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const dir = index % 2 === 0 ? 1 : -1;
+
+  const { scrollYProgress: enter } = useScroll({
+    target: ref,
+    offset: ["start end", "start 0.45"],
+  });
+  const { scrollYProgress: leave } = useScroll({
+    target: ref,
+    offset: ["end 0.35", "end start"],
+  });
+  const e = useSpring(enter, { stiffness: 120, damping: 24, mass: 0.4 });
+  const l = useSpring(leave, { stiffness: 120, damping: 24, mass: 0.4 });
+
+  const rotateX = useTransform([e, l], ([a, b]: number[]) => (1 - a) * 32 - b * 16);
+  const rotateY = useTransform([e, l], ([a, b]: number[]) => dir * ((1 - a) * -14 + b * 8));
+  const z = useTransform([e, l], ([a, b]: number[]) => (1 - a) * -260 - b * 140);
+  const opacity = useTransform([e, l], ([a, b]: number[]) => (0.15 + a * 0.85) * (1 - b * 0.6));
+  /* Light sweep across the card while it is still tilted. */
+  const glare = useTransform(e, [0, 0.6, 1], [0.35, 0.12, 0]);
+  const glareX = useTransform(e, [0, 1], ["-40%", "140%"]);
+
+  if (reduce) return <div className="h-full">{children}</div>;
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative h-full"
+      style={{
+        rotateX,
+        rotateY,
+        z,
+        opacity,
+        transformPerspective: 1200,
+        transformOrigin: dir === 1 ? "30% 100%" : "70% 100%",
+        willChange: "transform",
+      }}
+    >
+      {children}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-30 clip-corner-lg overflow-hidden"
+        style={{ opacity: glare }}
+      >
+        <motion.div
+          className="absolute inset-y-0 w-1/2"
+          style={{
+            left: glareX,
+            background:
+              "linear-gradient(105deg, transparent, rgba(0,255,229,0.35), transparent)",
+          }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function ProjectCard({
   project,
   index,
   inView,
   onOpen,
+  onZoom,
 }: {
   project: Project;
   index: number;
   inView: boolean;
   onOpen: (p: Project) => void;
+  onZoom: (p: Project, index: number) => void;
 }) {
   const color = categoryColor[project.category];
   const photoCount = project.images?.length ?? 0;
   const cover = project.images?.[0];
 
   return (
-    <motion.article
+    <motion.div
       layout
-      initial={{ opacity: 0, y: 36 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
       exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}
-      transition={{ duration: 0.55, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6 }}
-      onClick={() => onOpen(project)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen(project);
-        }
-      }}
-      className="clip-corner-lg group relative flex flex-col cursor-none"
-      style={{
-        background: "rgba(10,15,30,0.6)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        border: "1px solid var(--border)",
-        transition: "border-color 0.3s, box-shadow 0.3s",
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = "var(--accent)";
-        el.style.boxShadow = "var(--glow)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = "var(--border)";
-        el.style.boxShadow = "none";
-      }}
+      className="h-full"
     >
-      {/* Top accent line — reveals on hover */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-20"
-        style={{ background: "var(--accent)" }}
-      />
-
-      {/* THUMBNAIL */}
-      <div
-        className="relative aspect-[16/10] overflow-hidden"
-        style={{ borderBottom: "1px solid var(--border)" }}
-      >
-        {cover ? (
-          <Image
-            src={cover}
-            alt={project.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <PreviewPlaceholder project={project} />
-        )}
-
-        {/* Hover overlay — signals the card is clickable */}
-        <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[rgba(3,7,18,0.6)]">
-          <span
-            className="font-tech text-[0.7rem] uppercase tracking-[0.2em] px-5 py-2.5 clip-corner-sm"
-            style={{
-              background: "var(--accent)",
-              color: "var(--bg)",
-            }}
-          >
-            View Project ↗
-          </span>
-        </div>
-
-        {/* Category badge */}
-        <span
-          className="absolute top-3 left-3 z-10 font-tech text-[0.58rem] uppercase tracking-[0.15em] px-2.5 py-1 clip-corner-sm"
-          style={{
-            background: `${color}1f`,
-            border: `1px solid ${color}66`,
-            color,
-            backdropFilter: "blur(4px)",
+      <Scroll3D index={index}>
+        <motion.article
+          initial={{ opacity: 0, y: 36 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: -6 }}
+          onClick={() => onOpen(project)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onOpen(project);
+            }
           }}
-        >
-          {project.category}
-        </span>
-
-        {/* Year */}
-        <span
-          className="absolute top-3 right-3 z-10 font-tech text-[0.58rem] uppercase tracking-[0.15em] px-2.5 py-1"
+          className="clip-corner-lg group relative flex flex-col h-full cursor-none"
           style={{
-            background: "rgba(3,7,18,0.7)",
+            background: "rgba(10,15,30,0.6)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
             border: "1px solid var(--border)",
-            color: "var(--muted)",
-            backdropFilter: "blur(4px)",
+            transition: "border-color 0.3s, box-shadow 0.3s",
+          }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.borderColor = "var(--accent)";
+            el.style.boxShadow = "var(--glow)";
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.borderColor = "var(--border)";
+            el.style.boxShadow = "none";
           }}
         >
-          {project.year}
-        </span>
+          {/* Top accent line — reveals on hover */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-20"
+            style={{ background: "var(--accent)" }}
+          />
 
-        {/* Photo count */}
-        {photoCount > 0 && (
-          <span
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-1 font-tech text-[0.58rem] uppercase tracking-[0.12em] px-2.5 py-1"
-            style={{
-              background: "rgba(3,7,18,0.8)",
-              border: "1px solid var(--border)",
-              color: "var(--accent)",
-              backdropFilter: "blur(4px)",
-            }}
+          {/* THUMBNAIL — clicking a real screenshot opens it full size */}
+          <div
+            className="group/thumb relative aspect-[16/10] overflow-hidden"
+            style={{ borderBottom: "1px solid var(--border)" }}
+            {...(cover && {
+              role: "button",
+              tabIndex: 0,
+              "aria-label": `View ${project.title} screenshots full size`,
+              onClick: (e: React.MouseEvent) => {
+                e.stopPropagation();
+                onZoom(project, 0);
+              },
+              onKeyDown: (e: React.KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onZoom(project, 0);
+                }
+              },
+            })}
           >
-            ❏ {photoCount} {photoCount === 1 ? "photo" : "photos"}
-          </span>
-        )}
-      </div>
+            {cover ? (
+              <Image
+                src={cover}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <PreviewPlaceholder project={project} />
+            )}
 
-      {/* BODY */}
-      <div className="flex flex-col gap-4 p-6 flex-1">
-        <div>
-          <h3 className="text-[1.15rem] font-extrabold text-slate-200 leading-tight mb-2 transition-colors duration-300 group-hover:text-accent">
-            {project.title}
-          </h3>
-          <p className="text-[0.85rem] text-muted leading-[1.7]">
-            {project.description}
-          </p>
-        </div>
+            {/* Hover overlay — the image zooms, the rest of the card opens details */}
+            <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 bg-[rgba(3,7,18,0.6)]">
+              <span
+                className="font-tech text-[0.7rem] uppercase tracking-[0.2em] px-5 py-2.5 clip-corner-sm"
+                style={{
+                  background: "var(--accent)",
+                  color: "var(--bg)",
+                }}
+              >
+                {cover ? "⤢ View Full Image" : "View Project ↗"}
+              </span>
+            </div>
 
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-1.5">
-          {project.tech.map((t) => (
+            {/* Category badge */}
             <span
-              key={t}
-              className="font-mono text-[0.6rem] uppercase tracking-wider px-2 py-1"
+              className="absolute top-3 left-3 z-10 font-tech text-[0.58rem] uppercase tracking-[0.15em] px-2.5 py-1 clip-corner-sm"
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid var(--border)",
-                color: "var(--muted)",
+                background: `${color}1f`,
+                border: `1px solid ${color}66`,
+                color,
+                backdropFilter: "blur(4px)",
               }}
             >
-              {t}
+              {project.category}
             </span>
-          ))}
-        </div>
 
-        <div className="h-px" style={{ background: "var(--border)" }} />
-
-        {/* Key features */}
-        <div>
-          <div className="font-tech text-[0.6rem] uppercase tracking-[0.2em] text-muted mb-2">
-            Key Features
-          </div>
-          <ul className="flex flex-col gap-1.5">
-            {project.features.map((f) => (
-              <li
-                key={f}
-                className="flex gap-2 text-[0.8rem] text-slate-300 leading-snug"
-              >
-                <span style={{ color }}>▸</span>
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Business impact */}
-        <div
-          className="clip-corner-sm p-3"
-          style={{ background: `${color}0d`, border: `1px solid ${color}33` }}
-        >
-          <div
-            className="font-tech text-[0.55rem] uppercase tracking-[0.2em] mb-1"
-            style={{ color }}
-          >
-            Business Impact
-          </div>
-          <p className="text-[0.78rem] text-slate-300 leading-[1.6]">
-            {project.impact}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-auto pt-1 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 font-tech text-[0.65rem] uppercase tracking-[0.15em] text-accent">
-            View Details
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
-          </span>
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="cursor-none font-mono text-[0.6rem] font-bold uppercase tracking-widest px-3 py-2 clip-corner-sm transition-all hover:bg-accent/10"
-              style={{ border: "1px solid var(--accent)", color: "var(--accent)" }}
+            {/* Year */}
+            <span
+              className="absolute top-3 right-3 z-10 font-tech text-[0.58rem] uppercase tracking-[0.15em] px-2.5 py-1"
+              style={{
+                background: "rgba(3,7,18,0.7)",
+                border: "1px solid var(--border)",
+                color: "var(--muted)",
+                backdropFilter: "blur(4px)",
+              }}
             >
-              Live Demo ↗
-            </a>
+              {project.year}
+            </span>
+
+            {/* Photo count */}
+            {photoCount > 0 && (
+              <span
+                className="absolute bottom-3 right-3 z-10 flex items-center gap-1 font-tech text-[0.58rem] uppercase tracking-[0.12em] px-2.5 py-1"
+                style={{
+                  background: "rgba(3,7,18,0.8)",
+                  border: "1px solid var(--border)",
+                  color: "var(--accent)",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
+                ❏ {photoCount} {photoCount === 1 ? "photo" : "photos"}
+              </span>
+            )}
+          </div>
+
+          {/* BODY */}
+          <div className="flex flex-col gap-4 p-6 flex-1">
+            <div>
+              <h3 className="text-[1.15rem] font-extrabold text-slate-200 leading-tight mb-2 transition-colors duration-300 group-hover:text-accent">
+                {project.title}
+              </h3>
+              <p className="text-[0.85rem] text-muted leading-[1.7]">
+                {project.description}
+              </p>
+            </div>
+
+            {/* Tech stack */}
+            <div className="flex flex-wrap gap-1.5">
+              {project.tech.map((t) => (
+                <span
+                  key={t}
+                  className="font-mono text-[0.6rem] uppercase tracking-wider px-2 py-1"
+                  style={{
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid var(--border)",
+                    color: "var(--muted)",
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            <div className="h-px" style={{ background: "var(--border)" }} />
+
+            {/* Key features */}
+            <div>
+              <div className="font-tech text-[0.6rem] uppercase tracking-[0.2em] text-muted mb-2">
+                Key Features
+              </div>
+              <ul className="flex flex-col gap-1.5">
+                {project.features.map((f) => (
+                  <li
+                    key={f}
+                    className="flex gap-2 text-[0.8rem] text-slate-300 leading-snug"
+                  >
+                    <span style={{ color }}>▸</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Business impact */}
+            <div
+              className="clip-corner-sm p-3"
+              style={{ background: `${color}0d`, border: `1px solid ${color}33` }}
+            >
+              <div
+                className="font-tech text-[0.55rem] uppercase tracking-[0.2em] mb-1"
+                style={{ color }}
+              >
+                Business Impact
+              </div>
+              <p className="text-[0.78rem] text-slate-300 leading-[1.6]">
+                {project.impact}
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-auto pt-1 flex items-center justify-between">
+              <span className="flex items-center gap-1.5 font-tech text-[0.65rem] uppercase tracking-[0.15em] text-accent">
+                View Details
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  →
+                </span>
+              </span>
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="cursor-none font-mono text-[0.6rem] font-bold uppercase tracking-widest px-3 py-2 clip-corner-sm transition-all hover:bg-accent/10"
+                  style={{ border: "1px solid var(--accent)", color: "var(--accent)" }}
+                >
+                  Live Demo ↗
+                </a>
+              )}
+            </div>
+          </div>
+        </motion.article>
+      </Scroll3D>
+    </motion.div>
+  );
+}
+
+/* Full-size image viewer. Opens with a 3D flip-in, slides between photos,
+   and clicking the image toggles between fit-to-screen and the photo's
+   real pixel size (scroll to pan). Controlled so the detail modal and the
+   card thumbnail can both drive it. */
+function Lightbox({
+  images,
+  title,
+  index,
+  onIndex,
+  onClose,
+}: {
+  images: string[];
+  title: string;
+  index: number;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const count = images.length;
+  const [zoomed, setZoomed] = useState(false);
+  const [dir, setDir] = useState(1);
+
+  const go = (step: number) => {
+    setDir(step);
+    setZoomed(false);
+    onIndex((index + step + count) % count);
+  };
+
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopImmediatePropagation();
+        if (zoomed) setZoomed(false);
+        else onClose();
+      }
+      if (count > 1 && e.key === "ArrowLeft") go(-1);
+      if (count > 1 && e.key === "ArrowRight") go(1);
+    };
+    /* Capture phase so the detail modal underneath never sees these keys. */
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  });
+
+  const navBtn =
+    "cursor-none absolute top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center text-xl text-slate-200 transition-all hover:text-accent";
+  const chrome = {
+    background: "rgba(3,7,18,0.85)",
+    border: "1px solid var(--border)",
+  };
+
+  return createPortal(
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.1 } }}
+      transition={{ duration: 0.25 }}
+      onClick={onClose}
+      className="fixed inset-0 z-[9500]"
+      style={{
+        background: "rgba(2,5,12,0.96)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        perspective: 1600,
+      }}
+    >
+      <motion.div
+        initial={{ rotateX: 40, scale: 0.7, y: 80, opacity: 0, filter: "blur(12px)" }}
+        animate={{ rotateX: 0, scale: 1, y: 0, opacity: 1, filter: "blur(0px)" }}
+        exit={{ rotateX: -30, scale: 0.8, y: -60, opacity: 0, filter: "blur(8px)" }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className={`absolute inset-0 ${
+          zoomed ? "overflow-auto" : "flex items-center justify-center p-4 md:p-10"
+        }`}
+      >
+        <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+          <motion.div
+            key={index}
+            custom={dir}
+            variants={{
+              enter: (d: number) => ({ x: d * 120, rotateY: d * -35, opacity: 0 }),
+              center: { x: 0, rotateY: 0, opacity: 1 },
+              exit: (d: number) => ({ x: d * -120, rotateY: d * 35, opacity: 0 }),
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setZoomed((z) => !z);
+            }}
+            className={zoomed ? "w-max mx-auto" : "flex items-center justify-center"}
+            style={{ cursor: zoomed ? "zoom-out" : "zoom-in" }}
+          >
+            <Image
+              src={images[index]}
+              alt={`${title} — screenshot ${index + 1}`}
+              width={0}
+              height={0}
+              sizes="100vw"
+              priority
+              draggable={false}
+              className="select-none"
+              style={
+                zoomed
+                  ? { width: "auto", height: "auto", maxWidth: "none" }
+                  : {
+                      width: "auto",
+                      height: "auto",
+                      maxWidth: "min(1600px, 94vw)",
+                      maxHeight: "86vh",
+                      boxShadow: "0 0 60px rgba(0,255,229,0.15)",
+                      border: "1px solid var(--border)",
+                    }
+              }
+            />
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Top bar */}
+      <div
+        className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between gap-4 pointer-events-none"
+      >
+        <span
+          className="font-tech text-[0.62rem] uppercase tracking-[0.15em] px-3 py-1.5 text-slate-300 truncate"
+          style={chrome}
+        >
+          {title}
+          {count > 1 && (
+            <span className="text-accent">
+              {"  "}
+              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
           )}
+        </span>
+        <div className="flex gap-2 pointer-events-auto">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setZoomed((z) => !z);
+            }}
+            className="cursor-none h-10 px-3 font-tech text-[0.6rem] uppercase tracking-[0.15em] text-slate-200 transition-all hover:text-accent"
+            style={chrome}
+          >
+            {zoomed ? "⤡ Fit" : "⤢ Actual Size"}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            aria-label="Close image"
+            className="cursor-none w-10 h-10 flex items-center justify-center text-slate-200 transition-all hover:text-accent"
+            style={chrome}
+          >
+            ✕
+          </button>
         </div>
       </div>
-    </motion.article>
+
+      {count > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              go(-1);
+            }}
+            aria-label="Previous photo"
+            className={`${navBtn} left-5`}
+            style={chrome}
+          >
+            ‹
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              go(1);
+            }}
+            aria-label="Next photo"
+            className={`${navBtn} right-5`}
+            style={chrome}
+          >
+            ›
+          </button>
+        </>
+      )}
+
+      <span className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 font-tech text-[0.58rem] uppercase tracking-[0.2em] text-muted pointer-events-none whitespace-nowrap">
+        // click image to {zoomed ? "fit screen" : "view actual size"} · esc to close
+      </span>
+    </motion.div>,
+    document.body
   );
 }
 
@@ -633,14 +936,12 @@ function ProjectModal({
     };
   }, []);
 
-  /* Keyboard: Esc closes the lightbox first (then the modal),
-     arrows move between photos. */
+  /* Keyboard: Esc closes the modal, arrows move between photos.
+     While the lightbox is open it owns the keyboard. */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (fullscreen) setFullscreen(false);
-        else onClose();
-      }
+      if (fullscreen) return;
+      if (e.key === "Escape") onClose();
       if (imageCount > 1) {
         if (e.key === "ArrowLeft") setActive((i) => (i - 1 + imageCount) % imageCount);
         if (e.key === "ArrowRight") setActive((i) => (i + 1) % imageCount);
@@ -962,100 +1263,13 @@ function ProjectModal({
       {/* FULLSCREEN LIGHTBOX */}
       <AnimatePresence>
         {fullscreen && imageCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setFullscreen(false);
-            }}
-            className="fixed inset-0 z-[9500] flex items-center justify-center p-4"
-            style={{ background: "rgba(2,5,12,0.97)" }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={(e) => e.stopPropagation()}
-                className="relative"
-                style={{ width: "min(1600px, 95vw)", height: "90vh" }}
-              >
-                <Image
-                  src={images[active]}
-                  alt={`${project.title} — screenshot ${active + 1}`}
-                  fill
-                  sizes="95vw"
-                  className="object-contain"
-                  priority
-                />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Close */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreen(false);
-              }}
-              aria-label="Exit fullscreen"
-              className="cursor-none absolute top-5 right-5 w-10 h-10 flex items-center justify-center text-slate-200 transition-all hover:text-accent"
-              style={{
-                background: "rgba(3,7,18,0.85)",
-                border: "1px solid var(--border)",
-              }}
-            >
-              ✕
-            </button>
-
-            {imageCount > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prev();
-                  }}
-                  aria-label="Previous photo"
-                  className="cursor-none absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-xl text-slate-200 transition-all hover:text-accent"
-                  style={{
-                    background: "rgba(3,7,18,0.85)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    next();
-                  }}
-                  aria-label="Next photo"
-                  className="cursor-none absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-xl text-slate-200 transition-all hover:text-accent"
-                  style={{
-                    background: "rgba(3,7,18,0.85)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  ›
-                </button>
-                <span
-                  className="absolute bottom-5 left-1/2 -translate-x-1/2 font-tech text-[0.7rem] uppercase tracking-[0.15em] px-3 py-1.5"
-                  style={{
-                    background: "rgba(3,7,18,0.85)",
-                    border: "1px solid var(--border)",
-                    color: "var(--accent)",
-                  }}
-                >
-                  {String(active + 1).padStart(2, "0")} /{" "}
-                  {String(imageCount).padStart(2, "0")}
-                </span>
-              </>
-            )}
-          </motion.div>
+          <Lightbox
+            images={images}
+            title={project.title}
+            index={active}
+            onIndex={setActive}
+            onClose={() => setFullscreen(false)}
+          />
         )}
       </AnimatePresence>
     </motion.div>,
@@ -1066,8 +1280,22 @@ function ProjectModal({
 export default function Projects() {
   const [filter, setFilter] = useState<Filter>("All");
   const [selected, setSelected] = useState<Project | null>(null);
+  const [zoom, setZoom] = useState<{ project: Project; index: number } | null>(
+    null
+  );
   const gridRef = useRef(null);
   const inView = useInView(gridRef, { once: true, margin: "-60px" });
+
+  /* Header rises out of the floor in 3D as the section scrolls in. */
+  const headerRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress: headerIn } = useScroll({
+    target: headerRef,
+    offset: ["start end", "start 0.3"],
+  });
+  const headerRotate = useTransform(headerIn, [0, 1], [55, 0]);
+  const headerZ = useTransform(headerIn, [0, 1], [-300, 0]);
+  const headerOpacity = useTransform(headerIn, [0, 0.6], [0, 1]);
 
   const visible =
     filter === "All"
@@ -1086,25 +1314,40 @@ export default function Projects() {
     >
       <div className="max-w-5xl mx-auto">
         {/* HEADER */}
-        <RevealSection>
-          <SectionLabel>Portfolio</SectionLabel>
-          <SectionTitle>
-            Projects That Solve{" "}
-            <em
-              className="not-italic"
-              style={{
-                WebkitTextStroke: "1px var(--accent2)",
-                color: "transparent",
-              }}
-            >
-              Real Business Problems
-            </em>
-          </SectionTitle>
-          <p className="text-muted text-[1rem] leading-[1.8] max-w-2xl mb-14">
-            A collection of systems and websites I&apos;ve built to improve
-            workflow, efficiency, and business operations.
-          </p>
-        </RevealSection>
+        <motion.div
+          ref={headerRef}
+          style={
+            reduce
+              ? undefined
+              : {
+                  rotateX: headerRotate,
+                  z: headerZ,
+                  opacity: headerOpacity,
+                  transformPerspective: 1000,
+                  transformOrigin: "50% 100%",
+                }
+          }
+        >
+          <RevealSection>
+            <SectionLabel>Portfolio</SectionLabel>
+            <SectionTitle>
+              Projects That Solve{" "}
+              <em
+                className="not-italic"
+                style={{
+                  WebkitTextStroke: "1px var(--accent2)",
+                  color: "transparent",
+                }}
+              >
+                Real Business Problems
+              </em>
+            </SectionTitle>
+            <p className="text-muted text-[1rem] leading-[1.8] max-w-2xl mb-14">
+              A collection of systems and websites I&apos;ve built to improve
+              workflow, efficiency, and business operations.
+            </p>
+          </RevealSection>
+        </motion.div>
 
         {/* STATS */}
         <RevealSection delay={0.1}>
@@ -1215,6 +1458,7 @@ export default function Projects() {
                 index={i}
                 inView={inView}
                 onOpen={setSelected}
+                onZoom={(project, index) => setZoom({ project, index })}
               />
             ))}
           </AnimatePresence>
@@ -1228,6 +1472,20 @@ export default function Projects() {
             key={selected.id}
             project={selected}
             onClose={() => setSelected(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* FULL-SIZE IMAGE (opened straight from a card) */}
+      <AnimatePresence>
+        {zoom && (
+          <Lightbox
+            key={zoom.project.id}
+            images={zoom.project.images ?? []}
+            title={zoom.project.title}
+            index={zoom.index}
+            onIndex={(index) => setZoom((z) => z && { ...z, index })}
+            onClose={() => setZoom(null)}
           />
         )}
       </AnimatePresence>
