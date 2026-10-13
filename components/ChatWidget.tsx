@@ -6,6 +6,7 @@ import { useChat } from "@ai-sdk/react";
 import ReactMarkdown from "react-markdown";
 import { CHAT_LIMITS } from "@/lib/chat/config";
 import { chatErrorMessage } from "@/lib/chat/client-errors";
+import { wouldExceedLimits } from "@/lib/chat/conversation";
 
 const SUGGESTIONS = [
   "What's your tech stack?",
@@ -25,7 +26,10 @@ export default function ChatWidget() {
   const listRef = useRef<HTMLDivElement>(null);
 
   const busy = status === "submitted" || status === "streaming";
-  const atLimit = messages.length + 1 > CHAT_LIMITS.maxMessages;
+  // Mirrors the server caps so the visitor is told to start over before a
+  // request would be rejected. `full` = not even a one-letter message fits.
+  const full = wouldExceedLimits(messages, "x");
+  const atLimit = full || wouldExceedLimits(messages, input.trim());
   const errorText = status === "error" ? chatErrorMessage(error) : null;
 
   // Hide entirely unless the server says the chat is configured.
@@ -221,7 +225,7 @@ export default function ChatWidget() {
                 rows={1}
                 value={input}
                 maxLength={CHAT_LIMITS.maxMessageChars}
-                disabled={atLimit}
+                disabled={full}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
