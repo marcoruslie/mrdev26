@@ -81,3 +81,13 @@ Deploy instantly with [Vercel](https://vercel.com/):
 ```bash
 npx vercel
 ```
+
+## 💬 Ask Marco chat
+
+A floating chat widget answers visitors' questions using only the content in `content/` — the same data the page renders.
+
+- Copy `.env.example` to `.env.local` and set `OPENAI_API_KEY` to try it locally (rate limiting is skipped in dev without Upstash).
+- In production the widget stays hidden unless `OPENAI_API_KEY` **and** Upstash credentials are set.
+- Limits: 20 messages per IP per hour, 500 characters per message, 20 messages per conversation, 400 output tokens per reply.
+- Set a monthly hard spend limit in the OpenAI dashboard as a cost backstop.
+- Edit `content/*.ts` to change what the site shows *and* what the bot knows. Run `npm test` after editing.
