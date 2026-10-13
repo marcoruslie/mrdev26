@@ -10,6 +10,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import Background from "@/components/Background";
 import SectionWarp from "@/components/SectionWarp";
+import ChatWidgetLoader from "@/components/ChatWidgetLoader";
 
 export default function Home() {
   return (
@@ -28,6 +29,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <ChatWidgetLoader />
     </>
   );
 }

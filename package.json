@@ -18,7 +18,8 @@
     "framer-motion": "^11.3.31",
     "next": "^16.2.6",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
