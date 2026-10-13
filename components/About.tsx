@@ -3,8 +3,9 @@
 import { useRef, useEffect, useState } from "react";
 import { useInView } from "framer-motion";
 import { SectionLabel, SectionTitle, RevealSection } from "./ui";
-import { skills } from "./Skills";
-import { YEARS, TECHNICIANS, SITES } from "./facts";
+import { skills } from "@/content/skills";
+import { YEARS, TECHNICIANS, SITES } from "@/content/facts";
+import { aboutParagraphs } from "@/content/about";
 
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [value, setValue] = useState(0);
@@ -69,17 +70,9 @@ export default function About() {
             </em>
           </SectionTitle>
           <div className="text-muted text-[1rem] leading-[1.8] space-y-4">
-            <p>
-              I&apos;m a developer based in Indonesia who loves building at the
-              intersection of engineering and design. With experience spanning
-              full-stack web and mobile development, I specialize in creating
-              scalable, high-performance applications.
-            </p>
-            <p>
-              From digitizing industrial production flows to building real-time
-              dashboards, I thrive in complex, fast-moving environments where
-              clean code meets real-world impact.
-            </p>
+            {aboutParagraphs.map((text) => (
+              <p key={text}>{text}</p>
+            ))}
           </div>
         </RevealSection>
 

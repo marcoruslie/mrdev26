@@ -1,27 +1,7 @@
 "use client";
 
 import { SectionLabel, SectionTitle, RevealSection } from "./ui";
-
-const contactLinks = [
-  {
-    icon: "✉",
-    label: "Email",
-    value: "albertus0191@gmail.com",
-    href: "mailto:albertus0191@gmail.com",
-  },
-  {
-    icon: "⬡",
-    label: "GitHub",
-    value: "github.com/marcoruslie",
-    href: "https://github.com/marcoruslie",
-  },
-  {
-    icon: "in",
-    label: "LinkedIn",
-    value: "linkedin.com/in/marcoruslie",
-    href: "https://linkedin.com/in/marcoruslie",
-  },
-];
+import { contactLinks } from "@/content/contact";
 
 const termLines = [
   { prompt: true, cmd: "cat profile.json" },

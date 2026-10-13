@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { YEARS, TECHNICIANS, SITES_LABEL } from "./facts"
+import { YEARS, TECHNICIANS, SITES_LABEL } from "@/content/facts"
+import { heroPitch } from "@/content/about"
 
 const fadeUp = (delay = 0) => ({
 	initial: { opacity: 0, y: 30 },
@@ -64,9 +65,7 @@ export default function Hero() {
 					<motion.p
 						{...fadeUp(0.95)}
 						className="text-[0.95rem] text-muted leading-[1.8] mb-10">
-						Requirements, architecture, deployment, and the support calls when something breaks at 2am —
-						all mine. No team to escalate to, no handover. That&apos;s what I&apos;m bringing to a remote
-						role.
+						{heroPitch}
 					</motion.p>
 
 					{/* CTAs */}
