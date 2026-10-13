@@ -24,6 +24,7 @@ const categoryColor: Record<Category, string> = {
   Dashboard: "#60a5fa",
   Manufacturing: "#fb7185",
   "Custom Workflow": "#a78bfa",
+  Website: "#e879f9",
 };
 
 const FILTERS = [
@@ -34,6 +35,7 @@ const FILTERS = [
   "Dashboard",
   "Manufacturing",
   "Custom Workflow",
+  "Website",
 ] as const;
 
 type Filter = (typeof FILTERS)[number];

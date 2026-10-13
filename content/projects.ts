@@ -26,7 +26,8 @@ export type Category =
   | "POS"
   | "Dashboard"
   | "Manufacturing"
-  | "Custom Workflow";
+  | "Custom Workflow"
+  | "Website";
 
 export type Project = {
   id: string;
@@ -50,8 +51,162 @@ const PROJECT_WAREHOUSE_INVENTORY_DIR = "/projects/warehouse-inventory-api";
 const PROJECT_HELPDESK_OPS_DIR = "/projects/helpdesk-operations-app";
 const PROJECT_PRODUCTION_OPS_DIR = "/projects/production-operation-app";
 const PROJECT_EXEC_ANALYTICS_DIR = "/projects/executive-analytics";
+const PROJECT_RUSLIE_SPRING_DIR = "/projects/ruslie-spring";
+const PROJECT_MOVING_CHATBOT_DIR = "/projects/moving-quotation-chatbot";
+const PROJECT_OURLITTLECART_DIR = "/projects/ourlittlecart";
+const PROJECT_YUZAKA_CATALOG_DIR = "/projects/yuzaka-parts-catalog";
+const PROJECT_JOHN_CORNER_DIR = "/projects/john-corner";
 
 export const projects: Project[] = [
+  {
+    id: "ruslie-spring",
+    title: "Ruslie Spring — Company Website & Back Office",
+    category: "Business System",
+    year: "2026",
+    description:
+      "Bilingual (Indonesian / English) company website and back office for Ruslie Spring, a custom spring manufacturer in Surabaya. The public side showcases products, a spring catalog, a spring & wire price calculator and an AI chat assistant; behind it, staff run customers, wire stock, transactions and the production queue from one admin panel.",
+    tech: [
+      "Next.js 14",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "React Three Fiber",
+      "Supabase",
+      "Vercel AI SDK",
+    ],
+    features: [
+      "Bilingual company profile with quote requests",
+      "Spring catalog grouped by spring type",
+      "Spring & wire calculator estimating weight and material cost (steel & stainless)",
+      "AI chat assistant for product and pricing questions",
+      "Back office: customers, employees, items, wire stock, warehouses & storage locations",
+      "Transactions with a production queue and printable invoices",
+    ],
+    impact:
+      "One codebase serves both sides of the business — the public site that brings in quote requests, and the back office that tracks the wire stock, transactions and production queue behind them.",
+    glyph: "🌀",
+    images: [`${PROJECT_RUSLIE_SPRING_DIR}/01-home.webp`,
+              `${PROJECT_RUSLIE_SPRING_DIR}/02-catalog.webp`,
+              `${PROJECT_RUSLIE_SPRING_DIR}/03-calculator.webp`],
+    liveUrl: "https://www.rusliespring.com",
+  },
+  {
+    id: "moving-quotation-chatbot",
+    title: "AI Moving-Quotation Chatbot",
+    category: "Custom Workflow",
+    year: "2026",
+    description:
+      "Chat-first quoting for CV Jaya Harapan Semesta, a moving company in Surabaya. Customers describe their move in plain Indonesian (\"ada 2 lemari dan 1 kasur…\"), an AI assistant collects the shipment details through tool calls, and a deterministic pricing engine produces the quotation — then DEAL → bank transfer → proof upload → admin verification.",
+    tech: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS 4",
+      "shadcn/ui",
+      "PostgreSQL",
+      "Prisma 7",
+      "OpenAI API (tool calling)",
+      "Zod",
+      "Vitest",
+    ],
+    features: [
+      "Natural-language Indonesian chat — no form, no account",
+      "AI tool calls fill a structured shipment summary as the customer talks",
+      "Deterministic, unit-tested pricing engine driven by database config",
+      "Payment-proof upload with admin verify / reject",
+      "Admin panel with Admin / Staff roles",
+      "Swappable LLM providers (OpenAI, DeepSeek, Kenari)",
+    ],
+    impact:
+      "The AI never computes a price: quotes come only from the pricing engine, quotation cards render from the database, and a price guard replaces any AI reply that mentions an amount the backend didn't produce.",
+    glyph: "🚚",
+    images: [`${PROJECT_MOVING_CHATBOT_DIR}/01-landing.webp`,
+              `${PROJECT_MOVING_CHATBOT_DIR}/02-chat.webp`],
+  },
+  {
+    id: "ourlittlecart",
+    title: "Our Little Cart — Jastip Pre-Order Shop",
+    category: "Business System",
+    year: "2026",
+    description:
+      "Personal-shopping (jastip) platform: while a trip's pre-order is open, customers request anything from that country, the owner quotes each item by hand with shipping included, and the customer accepts, pays by bank transfer or e-wallet and follows the order until it arrives.",
+    tech: [
+      "Next.js 16",
+      "TypeScript",
+      "Tailwind CSS 4",
+      "shadcn/ui",
+      "PostgreSQL (Supabase)",
+      "Prisma 7",
+      "Zod",
+      "Recharts",
+      "ExcelJS / jsPDF",
+      "Vitest",
+    ],
+    features: [
+      "Trip poster with live pre-order countdown",
+      "Multi-item request form — no account needed",
+      "Private order page: quote, accept, pay, track",
+      "Paste a customer's DM order message and the form fills itself",
+      "Owner dashboard with revenue, cost & profit charts",
+      "Daily / weekly / monthly reports exported to Excel and PDF",
+    ],
+    impact:
+      "Moves the whole order flow — quoting, payment, purchasing, shipping — out of Instagram DMs into one tracked system, while customers keep talking to the shop by DM.",
+    glyph: "🛍️",
+    images: [`${PROJECT_OURLITTLECART_DIR}/01-home.webp`,
+              `${PROJECT_OURLITTLECART_DIR}/02-how-it-works.webp`],
+    liveUrl: "https://ourlittlecart.site",
+  },
+  {
+    id: "yuzaka-parts-catalog",
+    title: "Yuzaka & Luminaire Parts Catalog",
+    category: "Business System",
+    year: "2026",
+    description:
+      "Searchable B2B car-parts catalog for Maju Mandiri Motor's Yuzaka & Luminaire lines — 2,210 parts across 85 categories and 14 car brands, searchable by part number (with or without dashes) or car model, with a staff CMS behind it.",
+    tech: [
+      "Next.js 15",
+      "TypeScript",
+      "Supabase (Postgres, Auth, Storage)",
+      "Row-Level Security",
+    ],
+    features: [
+      "Search by part number or car model",
+      "Category pages listing parts by car brand, front and rear",
+      "Staff CMS for groups, parts, photos and descriptions",
+      "Owner-only account management",
+      "Photo uploads resized to WebP in the browser",
+      "Excel pricelist import with a dry-run review",
+    ],
+    impact:
+      "Turned the supplier's Excel pricelist into a public catalog that staff keep up to date from the CMS — every change goes live immediately, and no prices are ever shown.",
+    glyph: "🔩",
+    images: [`${PROJECT_YUZAKA_CATALOG_DIR}/01-home.webp`,
+              `${PROJECT_YUZAKA_CATALOG_DIR}/02-search.webp`,
+              `${PROJECT_YUZAKA_CATALOG_DIR}/03-category.webp`],
+    liveUrl: "https://www.yuzakacatalog.com",
+  },
+  {
+    id: "john-corner",
+    title: "John Corner — Company Profile & Menu",
+    category: "Website",
+    year: "2026",
+    description:
+      "Company profile and menu site for Rumah Roti John Surabaya (RJS) — 96 menu items in 16 categories with search and category filters, prices matched to the GrabFood listing, and a hand-built animation system.",
+    tech: ["HTML", "CSS", "JavaScript", "Python"],
+    features: [
+      "Animated hero and scroll reveals (custom motion system)",
+      "96-item menu in 16 categories with search",
+      "Menu and prices kept in one JSON file",
+      "Python build script regenerates the page from template + data",
+      "Order buttons linking to GrabFood",
+    ],
+    impact:
+      "A fast static site with no framework or server — updating the menu is one JSON edit and a rebuild.",
+    glyph: "🥖",
+    images: [`${PROJECT_JOHN_CORNER_DIR}/01-hero.webp`,
+              `${PROJECT_JOHN_CORNER_DIR}/02-menu.webp`],
+  },
   {
     id: "islamic-fashion-ecommerce",
     title: "Islamic Clothing E-Commerce & Production Management System",
