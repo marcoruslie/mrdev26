@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer
@@ -11,7 +13,10 @@ export default function Footer() {
         MR.dev
       </span>
       <span className="font-tech text-[0.7rem] text-muted tracking-widest">
-        Built with ⚡ Next.js + Motion
+        <Link href="/privacy" className="hover:text-accent transition-colors">
+          Privacy
+        </Link>
+        {" · "}Built with ⚡ Next.js + Motion
       </span>
     </footer>
   );
